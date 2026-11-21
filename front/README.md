@@ -1,32 +1,27 @@
-# React + TypeScript + Vite
+# Mortgage Calculator
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A single-page mortgage calculator built with React, TypeScript and Vite.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Home price, down payment (as an amount or a percentage, with a slider), interest rate and loan term (10/15/20/30 years)
+- Optional property tax, home insurance and HOA fees
+- Estimated monthly payment with a color-coded breakdown
+- Loan amount, total interest, total of payments and payoff date
+- PMI reminder when the down payment is under 20%
+- Year-by-year amortization schedule
+- Responsive layout with light and dark themes
 
-## React Compiler
+The calculation logic is in `src/mortgage.ts` and uses the standard fixed-rate amortization formula
+`M = P · r / (1 − (1 + r)^−n)`, where `r` is the monthly rate and `n` is the number of monthly payments.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Development
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```sh
+npm ci
+npm run dev     # start dev server
+npm run build   # type-check and build to dist/
+npm run lint    # oxlint
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+The production image (`Dockerfile`) builds the app and serves `dist/` with nginx.
