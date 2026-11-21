@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { calculate } from './mortgage'
 import './App.css'
 
@@ -53,6 +53,56 @@ function NumberField({ id, label, value, onChange, prefix, suffix, step = 1, min
   )
 }
 
+type Theme = 'system' | 'light' | 'dark'
+const THEMES: { value: Theme; label: string }[] = [
+  { value: 'system', label: 'System' },
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+]
+const THEME_KEY = 'theme'
+
+function readTheme(): Theme {
+  try {
+    const t = localStorage.getItem(THEME_KEY)
+    return t === 'light' || t === 'dark' ? t : 'system'
+  } catch {
+    return 'system'
+  }
+}
+
+function ThemeSwitch() {
+  const [theme, setTheme] = useState<Theme>(readTheme)
+
+  useEffect(() => {
+    const root = document.documentElement
+    if (theme === 'system') delete root.dataset.theme
+    else root.dataset.theme = theme
+    try {
+      if (theme === 'system') localStorage.removeItem(THEME_KEY)
+      else localStorage.setItem(THEME_KEY, theme)
+    } catch {
+      // storage unavailable (e.g. privacy mode) — theme still applies for this session
+    }
+  }, [theme])
+
+  return (
+    <div className="theme-switch" role="radiogroup" aria-label="Color theme">
+      {THEMES.map((t) => (
+        <button
+          key={t.value}
+          type="button"
+          role="radio"
+          aria-checked={theme === t.value}
+          className={theme === t.value ? 'active' : ''}
+          onClick={() => setTheme(t.value)}
+        >
+          {t.label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 function App() {
   const [homePrice, setHomePrice] = useState(400000)
   const [downPayment, setDownPayment] = useState(80000)
@@ -98,6 +148,7 @@ function App() {
   return (
     <div className="page">
       <header className="header">
+        <ThemeSwitch />
         <h1>Mortgage Calculator</h1>
         <p>Estimate your monthly payment and see how your loan pays down over time.</p>
       </header>
